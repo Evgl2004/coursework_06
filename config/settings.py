@@ -12,15 +12,21 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+from os import getenv
+
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--5$*^1+zbyoj59k%o82*0$8!_m8ptdj&_i-o+rjshh1hi#-c36'
+SECRET_KEY = getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'main',
+    'users',
+
 ]
 
 MIDDLEWARE = [
@@ -75,8 +85,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': getenv('DATABASES_NAME'),
+        'USER': getenv('DATABASES_USER'),
+        'PASSWORD': getenv('DATABASES_PASSWORD')
     }
 }
 
@@ -103,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -117,7 +129,38 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = (
+    # Здесь вы можете добавить пути к вашим статическим файлам,
+    # если они располагаются вне приложений
+    BASE_DIR / 'static',
+)
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+AUTH_USER_MODEL = 'users.User'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'
+
+LOGIN_URL = 'users:login'
+
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL = True
+
+CACHE_ENABLED = bool(getenv('CACHE_ENABLED'))
+
+if CACHE_ENABLED:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": getenv('CACHE_LOCATION'),
+        }
+    }
