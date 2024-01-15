@@ -1,0 +1,56 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<form method="post" class="row">
+    {% csrf_token %}
+    <div class="col-md-6">
+        <div class="card mb-4 box-shadow">
+            <div class="card-header">
+                <h3>
+                    {% if object %}
+                        Редактирование рассылки
+                    {% else %}
+                        Новая рассылка
+                    {% endif %}
+                </h3>
+            </div>
+            <div class="card-body">
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">
+                    {% if object %}
+                        Сохранить
+                    {% else %}
+                        Создать
+                    {% endif %}
+                </button>
+            </div>
+            <div class="card-footer">
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                     Текст рассылки
+                </h2>
+            </div>
+            <div class="card-body">
+                {{ formset.management_form }}
+                {% for form in formset.forms %}
+                    {{ form.as_p }}
+                    {% if not forloop.last %}
+                        <hr>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="card-footer">
+            </div>
+        </div>
+    </div>
+
+</form>
+
+{% endblock %}

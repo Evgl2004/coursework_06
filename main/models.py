@@ -23,21 +23,6 @@ class Clients(models.Model):
         return f'{self.last_name} {self.first_name}'
 
 
-class Mails(models.Model):
-
-    subject = models.CharField(max_length=150, verbose_name='тема')
-    body = models.TextField(verbose_name='тело')
-
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='владелец')
-
-    class Meta:
-        verbose_name = 'письмо'
-        verbose_name_plural = 'письма'
-
-    def __str__(self):
-        return f'{self.owner} {self.subject}'
-
-
 class SendingLists(models.Model):
 
     PERIOD_DAY = 'day'
@@ -65,7 +50,6 @@ class SendingLists(models.Model):
     period = models.CharField(max_length=5, default='day', choices=PERIODS, verbose_name='период')
     status = models.CharField(max_length=7, default='create', choices=STATUSES, verbose_name='статус')
 
-    mail = models.ForeignKey(Mails, on_delete=models.CASCADE, verbose_name='письмо')
     clients = models.ManyToManyField(Clients, verbose_name='клиенты')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='владелец')
 
@@ -75,6 +59,23 @@ class SendingLists(models.Model):
 
     def __str__(self):
         return f'{self.owner} {self.data_begin} {self.data_end} {self.period} {self.status}'
+
+
+class Mails(models.Model):
+
+    subject = models.CharField(max_length=150, verbose_name='тема')
+    body = models.TextField(verbose_name='тело')
+
+    send_list = models.ForeignKey(SendingLists, on_delete=models.CASCADE, **NULLABLE, verbose_name='рассылка')
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='владелец')
+
+    class Meta:
+        verbose_name = 'письмо'
+        verbose_name_plural = 'письма'
+
+    def __str__(self):
+        return f'{self.owner} {self.subject}'
 
 
 class LogSendingMails(models.Model):

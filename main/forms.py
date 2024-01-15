@@ -5,19 +5,19 @@ from main.models import Clients, Mails, SendingLists, LogSendingMails
 class ClientsForm(forms.ModelForm):
     class Meta:
         model = Clients
-        exclude = 'owner'
+        exclude = ('owner',)
 
 
 class MailsForm(forms.ModelForm):
     class Meta:
         model = Mails
-        exclude = 'owner'
+        exclude = ('owner',)
 
 
 class SendingListsFromUser(forms.ModelForm):
     class Meta:
         model = SendingLists
-        fields = ('data_begin', 'data_end', 'period', 'status', 'clients')
+        fields = ('data_begin', 'data_end', 'period', 'clients', )
 
 
 class SendingListsFromModerator(forms.ModelForm):
