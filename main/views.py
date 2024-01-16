@@ -89,8 +89,6 @@ class SendingListDeleteView(DeleteView):
     model = SendingLists
     success_url = reverse_lazy('main:home')
 
-    permission_required = 'main.delete_sending_list'
-
 
 class ClientsListView(ListView):
     model = Clients
@@ -127,3 +125,9 @@ class ClientsDeleteView(DeleteView):
     success_url = reverse_lazy('main:list_client')
 
     permission_required = 'main.delete_sending_list'
+
+
+class LogSendingMailListView(ListView):
+    model = LogSendingMails
+    form_class = LogSendingMailsForm
+
