@@ -37,6 +37,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -164,3 +165,8 @@ if CACHE_ENABLED:
             "LOCATION": getenv('CACHE_LOCATION'),
         }
     }
+
+CRONJOBS = [
+    ('*/3 * * * *', 'main.cron.change_status_sending_lists'),
+    ('*/7 * * * *', 'main.cron.checking_logs_and_send_mail'),
+]

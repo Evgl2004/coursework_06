@@ -3,6 +3,7 @@ from main.models import Clients, Mails, SendingLists, LogSendingMails
 from main.forms import ClientsForm, MailsForm, SendingListsFromUser, SendingListsFromModerator, LogSendingMailsForm
 from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
+from main.cron import change_status_sending_lists
 # from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 # from django.shortcuts import redirect, Http404
 # from main.services import is_moderator
@@ -46,6 +47,8 @@ class SendingListCreateView(CreateView):
                 attachment.owner = self.request.user
                 attachment.save()
 
+        change_status_sending_lists()
+
         return super().form_valid(form)
 
 
@@ -65,6 +68,8 @@ class SendingListUpdateView(UpdateView):
             formset = MailFormset(instance=self.object)
 
         context_data['formset'] = formset
+
+        change_status_sending_lists()
 
         return context_data
 

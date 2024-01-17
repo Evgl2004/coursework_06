@@ -17,7 +17,7 @@
                                 <th><h4>Статус</h4></th>
                                 <th><h4>Описание ошибки</h4></th>
                                 <th><h4>Код списка рассылки</h4></th>
-                                <th><h4>Почта</h4></th>
+                                <th><h4>Клиент</h4></th>
                             </tr>
                             {% for object in object_list %}
                             <tr>
@@ -31,7 +31,7 @@
                                     {% endif %}
                                 </h4></td>
                                 <td><h4>{{ object.error_massage }}</h4></td>
-                                <td><h4>{{ object.send_list }}</h4></td>
+                                <td><h4>{{ object.send_list.pk }}</h4></td>
                                 <td><h4>{{ object.client }}</h4></td>
                             </tr>
                             {% endfor %}
