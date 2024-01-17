@@ -4,14 +4,14 @@ from main.services import send_mail_for_send_list
 
 
 def change_status_sending_lists():
-    select_send_lists = SendingLists.objects.filter(status=SendingLists.STATUS_CREATE)
+    select_send_lists = SendingLists.objects.filter(status=SendingLists.STATUS_CREATE, is_active=True)
     if select_send_lists.exists():
         for send_list in select_send_lists:
             if datetime.now() >= send_list.data_begin.replace(tzinfo=None):
                 send_list.status = SendingLists.STATUS_START
                 send_list.save()
 
-    select_send_lists = SendingLists.objects.filter(status=SendingLists.STATUS_START)
+    select_send_lists = SendingLists.objects.filter(status=SendingLists.STATUS_START, is_active=True)
     if select_send_lists.exists():
         for send_list in select_send_lists:
             if datetime.now() >= send_list.data_end.replace(tzinfo=None):
@@ -20,7 +20,7 @@ def change_status_sending_lists():
 
 
 def checking_logs_and_send_mail():
-    select_send_lists = SendingLists.objects.filter(status=SendingLists.STATUS_START)
+    select_send_lists = SendingLists.objects.filter(status=SendingLists.STATUS_START, is_active=True)
     if select_send_lists.exists():
         for send_list in select_send_lists:
             select_log_lists = LogSendingMails.objects.filter(send_list=send_list)

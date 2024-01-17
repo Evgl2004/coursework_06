@@ -53,6 +53,8 @@ class SendingLists(models.Model):
     clients = models.ManyToManyField(Clients, verbose_name='клиенты')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='владелец')
 
+    is_active = models.BooleanField(default=True, verbose_name='активна')
+
     class Meta:
         verbose_name = 'список рассылки'
         verbose_name_plural = 'списки рассылок'

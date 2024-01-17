@@ -1,20 +1,32 @@
-from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView
+from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView, TemplateView
 from main.models import Clients, Mails, SendingLists, LogSendingMails
 from main.forms import ClientsForm, MailsForm, SendingListsFromUser, SendingListsFromModerator, LogSendingMailsForm
 from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
-from main.cron import change_status_sending_lists
-# from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from main.cron import change_status_sending_lists, checking_logs_and_send_mail
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 # from django.shortcuts import redirect, Http404
 # from main.services import is_moderator
 
 
-class SendingListListView(ListView):
+class HomeTemplateView(TemplateView):
+    template_name = 'main/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data( **kwargs)
+        context['total_sending_lists'] = SendingLists.objects.all().count()
+        context['total_sending_lists_is_active'] = SendingLists.objects.filter(is_active=True).count()
+        context['distinct_count_clients'] = Clients.objects.values('email').distinct().count()
+
+        return context
+
+
+class SendingListListView(LoginRequiredMixin, ListView):
     model = SendingLists
     form_class = SendingListsFromUser
 
 
-class SendingListCreateView(CreateView):
+class SendingListCreateView(LoginRequiredMixin, CreateView):
     model = SendingLists
     form_class = SendingListsFromUser
     success_url = reverse_lazy('main:home')
@@ -48,11 +60,12 @@ class SendingListCreateView(CreateView):
                 attachment.save()
 
         change_status_sending_lists()
+        checking_logs_and_send_mail()
 
         return super().form_valid(form)
 
 
-class SendingListUpdateView(UpdateView):
+class SendingListUpdateView(LoginRequiredMixin, UpdateView):
     model = SendingLists
     form_class = SendingListsFromUser
 
@@ -86,21 +99,21 @@ class SendingListUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class SendingListDetailView(DetailView):
+class SendingListDetailView(LoginRequiredMixin, DetailView):
     model = SendingLists
 
 
-class SendingListDeleteView(DeleteView):
+class SendingListDeleteView(LoginRequiredMixin, DeleteView):
     model = SendingLists
     success_url = reverse_lazy('main:home')
 
 
-class ClientsListView(ListView):
+class ClientsListView(LoginRequiredMixin, ListView):
     model = Clients
     form_class = ClientsForm
 
 
-class ClientsCreateView(CreateView):
+class ClientsCreateView(LoginRequiredMixin, CreateView):
     model = Clients
     form_class = ClientsForm
     success_url = reverse_lazy('main:list_client')
@@ -113,7 +126,7 @@ class ClientsCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ClientsUpdateView(UpdateView):
+class ClientsUpdateView(LoginRequiredMixin, UpdateView):
     model = Clients
     form_class = ClientsForm
 
@@ -121,18 +134,18 @@ class ClientsUpdateView(UpdateView):
         return reverse('main:edit_client', args=[self.kwargs.get('pk')])
 
 
-class ClientsDetailView(DetailView):
+class ClientsDetailView(LoginRequiredMixin, DetailView):
     model = Clients
 
 
-class ClientsDeleteView(DeleteView):
+class ClientsDeleteView(LoginRequiredMixin, DeleteView):
     model = Clients
     success_url = reverse_lazy('main:list_client')
 
     permission_required = 'main.delete_sending_list'
 
 
-class LogSendingMailListView(ListView):
+class LogSendingMailListView(LoginRequiredMixin, ListView):
     model = LogSendingMails
     form_class = LogSendingMailsForm
 

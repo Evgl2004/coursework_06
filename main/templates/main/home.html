@@ -1,0 +1,33 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+<main>
+    <div class="row text-center">
+        <div class="container col-12">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h1>Главная</h1>
+                </div>
+                <div class="card-body">
+                    <div class="col-12 text-center">
+                        <table class="table">
+                            <tr>
+                                <th><h4>Всего рассылок</h4></th>
+                                <th><h4>Активных рассылок</h4></th>
+                                <th><h4>Уникальных клиентов</h4></th>
+                            </tr>
+                            <tr>
+                                <td><h4>{{ total_sending_lists }}</h4></td>
+                                <td><h4>{{ total_sending_lists_is_active }}</h4></td>
+                                <td><h4>{{ distinct_count_clients }}</h4></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

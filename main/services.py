@@ -50,3 +50,5 @@ def send_mail_for_send_list(send_list, client_list=None):
 
 def is_moderator(user):
     return user.groups.filter(name='moderator').exists()
+
+
