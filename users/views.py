@@ -30,7 +30,7 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         new_user = form.save()
-        new_user.code = str(uuid.uuid4())
+        new_user.auth_guid_code = str(uuid.uuid4())
         new_user.is_active = False
 
         new_user.save()
@@ -49,8 +49,8 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
         return self.request.user
 
 
-def activate_code(code):
-    user = get_object_or_404(User, code=code)
+def activate_code(request, code):
+    user = get_object_or_404(User, auth_guid_code=code)
     user.is_active = True
     user.save()
     return redirect(reverse('users:login'))

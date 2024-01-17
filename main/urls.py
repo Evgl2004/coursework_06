@@ -1,6 +1,6 @@
 from django.urls import path
 from main.views import (SendingListListView, SendingListCreateView, SendingListUpdateView, SendingListDetailView,
-                        SendingListDeleteView, ClientsListView, ClientsCreateView, ClientsUpdateView, ClientsDetailView,
+                        SendingListDeleteView, ClientsListView, ClientsCreateView, ClientsUpdateView,
                         ClientsDeleteView, LogSendingMailListView, HomeTemplateView)
 from main.apps import MainConfig
 from django.views.decorators.cache import cache_page
@@ -20,7 +20,6 @@ urlpatterns = [
     path('clients/', ClientsListView.as_view(), name='list_client'),
     path('client/create/', ClientsCreateView.as_view(), name='create_client'),
     path('client/edit/<int:pk>/', ClientsUpdateView.as_view(), name='edit_client'),
-    path('client/view/<int:pk>/', ClientsDetailView.as_view(), name='view_client'),
     path('client/delete/<int:pk>/', ClientsDeleteView.as_view(), name='delete_client'),
     path('log_sending_mail/', LogSendingMailListView.as_view(), name='list_log_sending_mail'),
 ]

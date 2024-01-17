@@ -5,8 +5,8 @@ from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
 from main.cron import change_status_sending_lists, checking_logs_and_send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
-# from django.shortcuts import redirect, Http404
-# from main.services import is_moderator
+from django.shortcuts import redirect, Http404
+from main.services import is_moderator
 
 
 class HomeTemplateView(TemplateView):
@@ -24,6 +24,14 @@ class HomeTemplateView(TemplateView):
 class SendingListListView(LoginRequiredMixin, ListView):
     model = SendingLists
     form_class = SendingListsFromUser
+
+    def get_queryset(self):
+        if is_moderator(self.request.user) or self.request.user.is_superuser:
+            return super().get_queryset()
+        else:
+            return super().get_queryset().filter(
+                owner=self.request.user
+            )
 
 
 class SendingListCreateView(LoginRequiredMixin, CreateView):
@@ -98,19 +106,54 @@ class SendingListUpdateView(LoginRequiredMixin, UpdateView):
 
         return super().form_valid(form)
 
+    def get_form_class(self):
+        if is_moderator(self.request.user):
+            return SendingListsFromModerator
+        else:
+            return SendingListsFromUser
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner == self.request.user or is_moderator(self.request.user) or self.request.user.is_superuser:
+            return self.object
+        else:
+            raise Http404("Доступ только для владельца")
+
 
 class SendingListDetailView(LoginRequiredMixin, DetailView):
     model = SendingLists
+
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner == self.request.user or is_moderator(self.request.user) or self.request.user.is_superuser:
+            return self.object
+        else:
+            raise Http404("Доступ только для владельца")
 
 
 class SendingListDeleteView(LoginRequiredMixin, DeleteView):
     model = SendingLists
     success_url = reverse_lazy('main:home')
 
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner == self.request.user or is_moderator(self.request.user) or self.request.user.is_superuser:
+            return self.object
+        else:
+            raise Http404("Доступ только для владельца")
+
 
 class ClientsListView(LoginRequiredMixin, ListView):
     model = Clients
     form_class = ClientsForm
+
+    def get_queryset(self):
+        if is_moderator(self.request.user) or self.request.user.is_superuser:
+            return super().get_queryset()
+        else:
+            return super().get_queryset().filter(
+                owner=self.request.user
+            )
 
 
 class ClientsCreateView(LoginRequiredMixin, CreateView):
@@ -133,16 +176,24 @@ class ClientsUpdateView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse('main:edit_client', args=[self.kwargs.get('pk')])
 
-
-class ClientsDetailView(LoginRequiredMixin, DetailView):
-    model = Clients
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner == self.request.user or is_moderator(self.request.user) or self.request.user.is_superuser:
+            return self.object
+        else:
+            raise Http404("Доступ только для владельца")
 
 
 class ClientsDeleteView(LoginRequiredMixin, DeleteView):
     model = Clients
     success_url = reverse_lazy('main:list_client')
 
-    permission_required = 'main.delete_sending_list'
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.owner == self.request.user or is_moderator(self.request.user) or self.request.user.is_superuser:
+            return self.object
+        else:
+            raise Http404("Доступ только для владельца")
 
 
 class LogSendingMailListView(LoginRequiredMixin, ListView):

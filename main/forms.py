@@ -23,7 +23,7 @@ class SendingListsFromUser(forms.ModelForm):
 class SendingListsFromModerator(forms.ModelForm):
     class Meta:
         model = SendingLists
-        fields = ('status',)
+        fields = ('is_active',)
 
 
 class LogSendingMailsForm(forms.ModelForm):
