@@ -6,8 +6,6 @@ from main.views import (SendingListListView, SendingListCreateView, SendingListU
 from main.apps import MainConfig
 from django.views.decorators.cache import cache_page
 
-from main.cron import change_status_sending_lists, checking_logs_and_send_mail
-
 app_name = MainConfig.name
 
 

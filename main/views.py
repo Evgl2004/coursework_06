@@ -9,6 +9,11 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect, Http404, get_object_or_404
 from main.services import is_moderator
 
+from random import shuffle
+import random
+
+from blogs.models import Blog
+
 
 class HomeTemplateView(TemplateView):
     template_name = 'main/home.html'
@@ -18,6 +23,8 @@ class HomeTemplateView(TemplateView):
         context['total_sending_lists'] = SendingLists.objects.all().count()
         context['total_sending_lists_is_active'] = SendingLists.objects.filter(is_active=True).count()
         context['distinct_count_clients'] = Clients.objects.values('email').distinct().count()
+
+        context['blog_list'] = random.sample(list(Blog.objects.all()), len(list(Blog.objects.all())))[:3]
 
         return context
 
