@@ -7,7 +7,10 @@
             <a class="p-2 btn btn-outline-primary" href="{% url 'main:list_sending_list' %}">Рассылки</a>
             <a class="p-2 btn btn-outline-primary" href="{% url 'main:list_log_sending_mail' %}">Журнал рассылки</a>
             <a class="p-2 btn btn-outline-primary" href="{% url 'main:list_client' %}">Клиенты</a>
-            <a class="p-2 btn btn-outline-primary" href="{% url 'users:profile' %}">Профиль</a>
+            {% if perms.users.set_active %}
+                <a class="p-2 btn btn-outline-primary" href="{% url 'users:list' %}">Список пользователей</a>
+            {% endif %}
+            <a class="p-2 btn btn-outline-primary" href="{% url 'users:profile' user.pk %}">Профиль</a>
             <form action="{% url 'users:logout' %}" method="post">
                 {% csrf_token %}
                 <button class="p-2 btn btn-outline-danger" type="submit">Выйти</button>

@@ -59,6 +59,13 @@ class SendingLists(models.Model):
         verbose_name = 'список рассылки'
         verbose_name_plural = 'списки рассылок'
 
+        permissions = [
+            (
+                'set_active_sending_list',
+                'Возможно отключить рассылку'
+            )
+        ]
+
     def __str__(self):
         return f'{self.owner} {self.data_begin} {self.data_end} {self.period} {self.status}'
 

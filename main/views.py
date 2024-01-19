@@ -5,7 +5,8 @@ from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
 from main.cron import change_status_sending_lists, checking_logs_and_send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect, Http404
+from django.contrib.auth.decorators import login_required, permission_required
+from django.shortcuts import redirect, Http404, get_object_or_404
 from main.services import is_moderator
 
 
@@ -27,17 +28,27 @@ class SendingListListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         if is_moderator(self.request.user) or self.request.user.is_superuser:
-            return super().get_queryset()
+            return super().get_queryset().order_by('data_begin')
         else:
             return super().get_queryset().filter(
                 owner=self.request.user
-            )
+            ).order_by('data_begin')
 
 
 class SendingListCreateView(LoginRequiredMixin, CreateView):
     model = SendingLists
     form_class = SendingListsFromUser
-    success_url = reverse_lazy('main:home')
+
+    def get_success_url(self):
+        change_status_sending_lists()
+        checking_logs_and_send_mail()
+
+        return reverse_lazy('main:list_sending_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
 
     def get_context_data(self, **kwargs):
 
@@ -67,15 +78,17 @@ class SendingListCreateView(LoginRequiredMixin, CreateView):
                 attachment.owner = self.request.user
                 attachment.save()
 
-        change_status_sending_lists()
-        checking_logs_and_send_mail()
-
         return super().form_valid(form)
 
 
 class SendingListUpdateView(LoginRequiredMixin, UpdateView):
     model = SendingLists
     form_class = SendingListsFromUser
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
 
     def get_success_url(self):
         return reverse('main:edit_sending_list', args=[self.kwargs.get('pk')])
@@ -137,7 +150,7 @@ class SendingListDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
-        if self.object.owner == self.request.user or is_moderator(self.request.user) or self.request.user.is_superuser:
+        if self.object.owner == self.request.user or self.request.user.is_superuser:
             return self.object
         else:
             raise Http404("Доступ только для владельца")
@@ -178,7 +191,7 @@ class ClientsUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
-        if self.object.owner == self.request.user or is_moderator(self.request.user) or self.request.user.is_superuser:
+        if self.object.owner == self.request.user or self.request.user.is_superuser:
             return self.object
         else:
             raise Http404("Доступ только для владельца")
@@ -190,7 +203,7 @@ class ClientsDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
-        if self.object.owner == self.request.user or is_moderator(self.request.user) or self.request.user.is_superuser:
+        if self.object.owner == self.request.user or self.request.user.is_superuser:
             return self.object
         else:
             raise Http404("Доступ только для владельца")
@@ -200,3 +213,16 @@ class LogSendingMailListView(LoginRequiredMixin, ListView):
     model = LogSendingMails
     form_class = LogSendingMailsForm
 
+
+@login_required
+@permission_required('main.set_active_sending_list')
+def toggle_activity(request, pk):
+    client_item = get_object_or_404(SendingLists, pk=pk)
+    if client_item.is_active:
+        client_item.is_active = False
+    else:
+        client_item.is_active = True
+
+    client_item.save()
+
+    return redirect(reverse('main:list_sending_list'))

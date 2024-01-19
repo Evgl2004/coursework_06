@@ -8,7 +8,7 @@ def send_welcome_mail(new_user):
         subject='Поздравляем с регистрацией!',
         message=f'Вы зарегистрировалась на нашей платформе!\n'
                 f'Добро пожаловать!\n'
-                f'Активация профиля: {reverse_lazy("users:activate", args=[new_user.auth_guid_code])}\n',
+                f'Активация профиля: {reverse_lazy("users:activate_code", args=[new_user.auth_guid_code])}\n',
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[new_user.email]
     )

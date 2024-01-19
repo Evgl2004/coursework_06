@@ -1,0 +1,52 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<main>
+    <div class="col-12 md-5">
+        <a class="btn btn-outline-success" href="{% url 'main:create_sending_list' %}">Создать рассылку</a><br><br>
+    </div>
+
+    <div class="row text-center">
+        <div class="container col-12">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h1>Список пользователей</h1>
+                </div>
+                <div class="card-body">
+                    <div class="col-12 text-center">
+                        <table class="table">
+                            <tr>
+                                <th><h4>Код</h4></th>
+                                <th><h4>Почта</h4></th>
+                                <th><h4>Имя</h4></th>
+                                <th><h4>Фамилия</h4></th>
+                                <th><h4>Изменить</h4></th>
+                                <th><h4>Активация</h4></th>
+                            </tr>
+                            {% for object in object_list %}
+                            <tr>
+                                <td><h4>{{ object.pk }}</h4></td>
+                                <td><h4>{{ object.email }}</h4></td>
+                                <td><h4>{{ object.first_name }}</h4></td>
+                                <td><h4>{{ object.last_name }}</h4></td>
+                                <td><h4>
+                                    <a href="{% url 'users:profile' object.pk %}"
+                                        class="btn btn-sm btn-block btn-outline-secondary">Edit</a>
+                                </h4></td>
+                                <td><h4>
+                                    {% if object.is_active %}
+                                        <a class="btn btn-warning" href="{% url 'users:toggle_activity' object.pk %}">Деактивация</a>
+                                    {% else %}
+                                        <a class="btn btn-success" href="{% url 'users:toggle_activity' object.pk %}">Активация</a>
+                                    {% endif %}
+                                </h4></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
