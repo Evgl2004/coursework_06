@@ -4,12 +4,12 @@ from main.forms import ClientsForm, MailsForm, SendingListsFromUser, SendingList
 from django.urls import reverse_lazy, reverse
 from django.forms import inlineformset_factory
 from main.cron import change_status_sending_lists, checking_logs_and_send_mail
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect, Http404, get_object_or_404
-from main.services import is_moderator
+from main.services import (is_moderator, get_cache_total_sending_lists, get_cache_total_sending_lists_is_active,
+                           get_cache_distinct_count_clients)
 
-from random import shuffle
 import random
 
 from blogs.models import Blog
@@ -20,9 +20,9 @@ class HomeTemplateView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data( **kwargs)
-        context['total_sending_lists'] = SendingLists.objects.all().count()
-        context['total_sending_lists_is_active'] = SendingLists.objects.filter(is_active=True).count()
-        context['distinct_count_clients'] = Clients.objects.values('email').distinct().count()
+        context['total_sending_lists'] = get_cache_total_sending_lists()
+        context['total_sending_lists_is_active'] = get_cache_total_sending_lists_is_active()
+        context['distinct_count_clients'] = get_cache_distinct_count_clients()
 
         context['blog_list'] = random.sample(list(Blog.objects.all()), len(list(Blog.objects.all())))[:3]
 
