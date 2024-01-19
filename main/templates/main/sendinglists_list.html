@@ -1,0 +1,68 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<main>
+    <div class="col-12 md-5">
+        <a class="btn btn-outline-success" href="{% url 'main:create_sending_list' %}">Создать рассылку</a><br><br>
+    </div>
+
+    <div class="row text-center">
+        <div class="container col-12">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h1>Список рассылок</h1>
+                </div>
+                <div class="card-body">
+                    <div class="col-12 text-center">
+                        <table class="table">
+                            <tr>
+                                <th><h4>Код</h4></th>
+                                <th><h4>Дата начала</h4></th>
+                                <th><h4>Статус</h4></th>
+                                <th><h4>Период</h4></th>
+                                <th><h4>Детали</h4></th>
+                                {% if perms.main.set_active_sending_list %}
+                                    <th><h4>Активировать</h4></th>
+                                {% else %}
+                                    <th><h4>Изменить</h4></th>
+                                    <th><h4>Удалить</h4></th>
+                                {% endif %}
+                            </tr>
+                            {% for object in object_list %}
+                            <tr>
+                                <td><h4>{{ object.pk }}</h4></td>
+                                <td><h4>{{ object.data_begin }}</h4></td>
+                                <td><h4>{{ object.status }}</h4></td>
+                                <td><h4>{{ object.period }}</h4></td>
+                                <td><h4>
+                                    <a href="{% url 'main:view_sending_list' object.pk %}"
+                                        class="btn btn-sm btn-block btn-outline-primary">View</a>
+                                </h4></td>
+                                {% if perms.main.set_active_sending_list %}
+                                <td><h4>
+                                    {% if object.is_active %}
+                                        <a class="btn btn-warning" href="{% url 'main:toggle_activity' object.pk %}">Деактивация</a>
+                                    {% else %}
+                                        <a class="btn btn-success" href="{% url 'main:toggle_activity' object.pk %}">Активация</a>
+                                    {% endif %}
+                                </h4></td>
+                                {% else %}
+                                    <td><h4>
+                                        <a href="{% url 'main:edit_sending_list' object.pk %}"
+                                            class="btn btn-sm btn-block btn-outline-secondary">Edit</a>
+                                    </h4></td>
+                                    <td><h4>
+                                        <a href="{% url 'main:delete_sending_list' object.pk %}"
+                                            class="btn btn-sm btn-block btn-outline-danger">Delete</a>
+                                    </h4></td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

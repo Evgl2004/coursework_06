@@ -1,0 +1,47 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<main>
+    <div class="col-12 md-5">
+        <a class="btn btn-outline-success" href="{% url 'main:create_client' %}">Создать клиента</a><br><br>
+    </div>
+
+    <div class="row text-center">
+        <div class="container col-12">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h1>Список клиентов</h1>
+                </div>
+                <div class="card-body">
+                    <div class="col-12 text-center">
+                        <table class="table">
+                            <tr>
+                                <th><h4>Имя</h4></th>
+                                <th><h4>Фамилия</h4></th>
+                                <th><h4>Почта</h4></th>
+                                <th><h4>Изменить</h4></th>
+                                <th><h4>Удалить</h4></th>
+                            </tr>
+                            {% for object in object_list %}
+                            <tr>
+                                <td><h4>{{ object.first_name }}</h4></td>
+                                <td><h4>{{ object.last_name }}</h4></td>
+                                <td><h4>{{ object.email }}</h4></td>
+                                <td><h4>
+                                    <a href="{% url 'main:edit_client' object.pk %}"
+                                        class="btn btn-sm btn-block btn-outline-secondary">Edit</a>
+                                </h4></td>
+                                <td><h4>
+                                    <a href="{% url 'main:delete_client' object.pk %}"
+                                        class="btn btn-sm btn-block btn-outline-danger">Delete</a>
+                                </h4></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

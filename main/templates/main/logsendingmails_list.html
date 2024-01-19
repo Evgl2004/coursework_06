@@ -1,0 +1,45 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<main>
+    <div class="row text-center">
+        <div class="container col-12">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h1>Журнал рассылок</h1>
+                </div>
+                <div class="card-body">
+                    <div class="col-12 text-center">
+                        <table class="table">
+                            <tr>
+                                <th><h4>Код</h4></th>
+                                <th><h4>Дата</h4></th>
+                                <th><h4>Статус</h4></th>
+                                <th><h4>Описание ошибки</h4></th>
+                                <th><h4>Код списка рассылки</h4></th>
+                                <th><h4>Клиент</h4></th>
+                            </tr>
+                            {% for object in object_list %}
+                            <tr>
+                                <td><h4>{{ object.pk }}</h4></td>
+                                <td><h4>{{ object.data_send }}</h4></td>
+                                <td><h4>
+                                    {% if object.is_done %}
+                                        <p style="color:green">Успешно</p>
+                                    {% else %}
+                                        <p style="color:red">Ошибка</p>
+                                    {% endif %}
+                                </h4></td>
+                                <td><h4>{{ object.error_massage }}</h4></td>
+                                <td><h4>{{ object.send_list.pk }}</h4></td>
+                                <td><h4>{{ object.client }}</h4></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
